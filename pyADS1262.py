@@ -6,13 +6,13 @@ import sys
 from constants import *
 
 spi = spidev.SpiDev()
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(STRT, GPIO.OUT) #start pin at gpio pin 4 - output
-GPIO.setup(DRDY, GPIO.IN, pull_up_down = GPIO.PUD_UP) #DRDY pin
-GPIO.setup(PWDN, GPIO.OUT) #PWDN pin
-spi.open(spiBus,0) # (bus, device)??
-spi.mode = 0b01
-spi.max_speed_hz = 1400000000/clockDiv
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(STRT, GPIO.OUT) #start pin at gpio pin 4 - output
+# GPIO.setup(DRDY, GPIO.IN, pull_up_down = GPIO.PUD_UP) #DRDY pin
+# GPIO.setup(PWDN, GPIO.OUT) #PWDN pin
+# spi.open(spiBus,0) # (bus, device)??
+# spi.mode = 0b01
+# spi.max_speed_hz = 1400000000/clockDiv
 
 # class Interface:
 #     startpin = 41
@@ -21,12 +21,6 @@ spi.max_speed_hz = 1400000000/clockDiv
 
 #     def read():
 #         #bla
-
-STRT = 26 #start pin - output from pi to ADC
-PWDN  = 27 #power down - output from pi to ADC
-DRDY  = 12 #data ready - input from ADC to pi
-spiBus = 0 #this selects which pins will be used for the SPI communication. For more information refer to raspberry pi documentation
-clockDiv = 1024 #SPI clock divider - sets speed of spi communication. must be power of 2. Larger vales will mean slower SPI, but extremelylow values may result in errors
 
 
 def ads1262_Reg_Read(reg_address):
@@ -50,17 +44,17 @@ def ads1262_Read_Data_By_Command():
     print(adc_data_out)
 
 
-def init_GPIO_SPI():
+def init_GPIO_SPI(STRT=26, DRDY=12, PWDN=27, spiBus=0, clockDiv=1024):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(STRT, GPIO.OUT) #start pin at gpio pin 4 - output
     GPIO.setup(DRDY, GPIO.IN, pull_up_down = GPIO.PUD_UP) #DRDY pin
     GPIO.setup(PWDN, GPIO.OUT) #PWDN pin
     spi.open(spiBus,0) # (bus, device)??
     spi.mode = 0b01
-    spi.max_speed_hz = 1400000000/clockDiv  #this can be any of the following - 
+    spi.max_speed_hz = int(1400000000/clockDiv)  #change to 1500000000 for RPi4
 
 
-def restart():
+def restart(STRT=26, PWDN=27):
     GPIO.output(PWDN, 0) #turn it off
     sleep(.5) #let it have a nap
     GPIO.output(PWDN, 1) #turn it on
