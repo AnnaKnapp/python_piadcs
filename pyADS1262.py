@@ -62,7 +62,7 @@ def restart(STRT=26, PWDN=27):
     sleep(2)
 
 def read_Continuous_mode(DRDY = 12):
-    incoming = GPIO.wait_for_edge(myDRDY, GPIO.FALLING, timeout=100)
+    incoming = GPIO.wait_for_edge(DRDY, GPIO.FALLING, timeout=100)
     datain = spi.readbytes(6)
     if datain[5] != sum(datain[1:5])+0x9B & 255:
         print("ERR - checksum failed")

@@ -57,9 +57,10 @@ errorcount=0
 
 interrupted = False
 while 1:
-        timeSoFar = str(time() - startime)
-        stringToWrite = timeSoFar +','+ str(read_Continuous_mode(myDRDY)) + '\n'
-        datafile.write(stringToWrite)
+    timeSoFar = str(time() - startime)
+    stringToWrite = timeSoFar +','+ str(adc.read_Continuous_mode(myDRDY)) + '\n'
+    datafile.write(stringToWrite)
+    print(stringToWrite)
 
     if interrupted:
         gc.collect()
