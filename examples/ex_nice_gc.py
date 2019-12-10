@@ -29,7 +29,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
-spi = spidev.SpiDev()
+#spi = spidev.SpiDev()
 # GPIO.setmode(GPIO.BCM)
 # GPIO.setup(adc.STRT, GPIO.OUT) #start pin at gpio pin 4 - output
 # GPIO.setup(adc.DRDY, GPIO.IN, pull_up_down = GPIO.PUD_UP) #DRDY pin
@@ -43,7 +43,8 @@ fileName = sys.argv[1] + '.txt'
 
 
 adc.init_GPIO_SPI(mySTRT, myDRDY, myPWDN, myspiBus, myclockDiv) #sets up spi and gpio communication on Raspberry Pi
-adc.restart(mySTRT, myPWDN) #restarts the ADC
+                #The arguments here are optional. If none are provided it defaults to those in the wiring diagram
+adc.restart(mySTRT, myPWDN) #restarts the ADC - arguments option defaults are in wiring diagram
 adc.write_all_regs() #Writes registers with the values defined in the module - currently hard-coded. Will be more modular in future releases
 print(adc.read_all_regs()) #reads back the values written in order. Returns a list of the values
 
@@ -56,17 +57,8 @@ errorcount=0
 
 interrupted = False
 while 1:
-    incoming = GPIO.wait_for_edge(myDRDY, GPIO.FALLING, timeout=100)
-    datain = spi.readbytes(6)
-    if datain[5] != sum(datain[1:5])+0x9B & 255:
-        print("ERR - checksum failed")
-    else:
-        combined_data = datain[1] << 24 | datain[2] << 16 | datain[3] << 8 | datain[4]
-        if(combined_data & (1<<31)) !=0:
-            combined_data = combined_data - (1<<32)
-        O2_data = combined_data*(2.5/2**31)
         timeSoFar = str(time() - startime)
-        stringToWrite = timeSoFar +','+ str(O2_data) + '\n'
+        stringToWrite = timeSoFar +','+ str(read_Continuous_mode(myDRDY)) + '\n'
         datafile.write(stringToWrite)
 
     if interrupted:

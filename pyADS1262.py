@@ -61,6 +61,19 @@ def restart(STRT=26, PWDN=27):
     GPIO.output(STRT, 0) #Set start low so conversions do not run and DRDY does not pulse
     sleep(2)
 
+def read_Continuous_mode(DRDY = 12):
+    incoming = GPIO.wait_for_edge(myDRDY, GPIO.FALLING, timeout=100)
+    datain = spi.readbytes(6)
+    if datain[5] != sum(datain[1:5])+0x9B & 255:
+        print("ERR - checksum failed")
+        return float('nan')
+    else:
+        combined_data = datain[1] << 24 | datain[2] << 16 | datain[3] << 8 | datain[4]
+        if(combined_data & (1<<31)) !=0:
+            combined_data = combined_data - (1<<32)
+        converteddata = combined_data*(2.5/2**31)
+        return converteddata
+
 
 def write_all_regs():
     ads1262_Reg_Write(POWER, 0x01)      #Aincom level shift for isolated sensors disabled - 0x01
