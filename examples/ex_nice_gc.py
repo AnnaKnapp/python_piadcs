@@ -45,7 +45,10 @@ fileName = sys.argv[1] + '.txt'
 adc.init_GPIO_SPI(mySTRT, myDRDY, myPWDN, myspiBus, myclockDiv) #sets up spi and gpio communication on Raspberry Pi
                 #The arguments here are optional. If none are provided it defaults to those in the wiring diagram
 adc.restart(mySTRT, myPWDN) #restarts the ADC - arguments option defaults are in wiring diagram
-adc.write_all_regs() #Writes registers with the values defined in the module - currently hard-coded. Will be more modular in future releases
+adc.write_all_regs(mode2=0x08) #Writes registers with the default values or user supplied values as arguments
+                #in this example I change the mode two register value to be different than the default - this particular
+                #change speeds the datarate up to 400sps (the default is 20) 
+                #PLEASE refer to the ADS1262 datasheet (sec9.6) before adding/changing arguments to this function
 print(adc.read_all_regs()) #reads back the values written in order. Returns a list of the values
 
 print("Time to start reading")
@@ -62,7 +65,7 @@ while 1:
     datafile.write(stringToWrite)
     print(stringToWrite)
 
-    if interrupted:
+    if interrupted: #this allows the program to exit gracefully when ctrl-c is used to stop it
         gc.collect()
         print('interrupted')
         exit()
