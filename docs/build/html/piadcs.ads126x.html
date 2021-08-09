@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>piadcs.ads126x package &mdash; piadcs 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="piadcs 0.1.0 documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="piadcs-ads126x-package">
+<h1>piadcs.ads126x package<a class="headerlink" href="#piadcs-ads126x-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-piadcs.ads126x.ads126x">
+<span id="piadcs-ads126x-ads126x-module"></span><h2>piadcs.ads126x.ads126x module<a class="headerlink" href="#module-piadcs.ads126x.ads126x" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.convert_data">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">convert_data</code><span class="sig-paren">(</span><em>datain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#convert_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.convert_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts the output of the ADC into a voltage</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datain</strong> (<em>list</em>) &#8211; A list of bytes (the raw output of the adc)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a float indicating a voltage between 2.5v and -2.5v - This will
+not be adjusted for PGA gain. If you use a voltage reference other
+than midsupply (2.5v) which is what is used by the internal
+reference then you will need to adjust this accordingly</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.init_GPIO_SPI">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">init_GPIO_SPI</code><span class="sig-paren">(</span><em>STRT</em>, <em>DRDY</em>, <em>PWDN</em>, <em>connection</em>, <em>spiBus</em>, <em>spispeedHz</em>, <em>spidevice=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#init_GPIO_SPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.init_GPIO_SPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>initializes the GPIO pins and SPI bus on the Raspbery Pi</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>STRT</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the start pin of the ADC
+Pin 26 is used for this in the example wiring diagram</li>
+<li><strong>DRDY</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the data ready pin of
+the ADC. Pin 4 is used for this in the example wiring diagram</li>
+<li><strong>PWDN</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the power down pin of the
+ADC. Pin 27 is used for this in the example wiring diagram</li>
+<li><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</li>
+<li><strong>spiBus</strong> (<em>int</em>) &#8211; The spi bus on the Raspberry Pi that you want to use to communicate
+with the ADS126x. bus 0 is is used for this in the example</li>
+<li><strong>spispeedHz</strong> (<em>int</em>) &#8211; The speed in Hertz of the SPI clock. This should scale depending on
+your ADC datarate. Higher data rates will require faster SPI.
+communication</li>
+<li><strong>spidevice</strong> (<em>int, optional</em>) &#8211; Sets SPI device if using multiple devices on the same SPI bus. Default
+is zero and can be left as such if you are only using the one device.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.read_Continuous_CHK">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">read_Continuous_CHK</code><span class="sig-paren">(</span><em>connection</em>, <em>DRDY</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#read_Continuous_CHK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.read_Continuous_CHK" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads a 32 bit conversion from the ADC. Use for reading direct
+(ADS126x datasheet section 9.4.7.1)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</li>
+<li><strong>DRDY</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the data ready pin
+of the ADC. Pin 4 is shown for this in the wiring diagram</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Returns a tuple containing a list of 4 bytes representing the
+raw output of the ADC, and an error check. If the error check
+is None that means that the checksum passed and the data is useable.
+If the checksum fails the list will be None, and the error check
+will be the string &#8220;Checksum Failed&#8221;. If you are getting a lot of
+this error, you may want to consider increasing SPI speed.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.read_Data_By_Command_CHK">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">read_Data_By_Command_CHK</code><span class="sig-paren">(</span><em>connection</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#read_Data_By_Command_CHK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.read_Data_By_Command_CHK" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads a single conversion from the ADS1262. Use for reading in pulse
+conversion mode See datasheet section 9.4.1.2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns a tuple containing a list of 4 bytes representing the
+raw output of the ADC, and an error check. If the error check
+is None that means that the checksum passed and the data is useable.
+If the checksum fails the list will be None, and the error check
+will be the string &#8220;Checksum Failed&#8221;. If you are getting a lot of
+this error, you may want to consider increasing SPI speed.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.read_all_regs">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">read_all_regs</code><span class="sig-paren">(</span><em>connection</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#read_all_regs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.read_all_regs" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads the values of all the registers on the ADS1262. starting with
+the ID register (register 0)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.restart">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">restart</code><span class="sig-paren">(</span><em>strt</em>, <em>pwdn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>restarts the ADS126x</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>STRT</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the start pin of the ADC
+In the example wiring diagram this is pin 22</li>
+<li><strong>PWDN</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the power down pin
+of the ADC. In the example wiring diagram this is pin 27</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.startCommand">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">startCommand</code><span class="sig-paren">(</span><em>connection</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#startCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.startCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts ADC1 conversions using the start command sent over SPI</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.startConversions">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">startConversions</code><span class="sig-paren">(</span><em>strt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#startConversions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.startConversions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts ADC1 conversions by pulling the START pin high</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>STRT</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the start pin of the ADC
+Pin 26 is used for this in the example wiring diagram</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.stopCommand">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">stopCommand</code><span class="sig-paren">(</span><em>connection</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#stopCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.stopCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops ADC1 conversions using the stop command sent over SPI</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.stopConversions">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">stopConversions</code><span class="sig-paren">(</span><em>strt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#stopConversions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.stopConversions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops ADC1 conversions by pulling the START pin low</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>STRT</strong> (<em>int</em>) &#8211; The BCM number for the GPIO pin connected to the start pin of the ADC
+Pin 26 is used for this in the example wiring diagram</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="piadcs.ads126x.ads126x.write_all_regs">
+<code class="descclassname">piadcs.ads126x.ads126x.</code><code class="descname">write_all_regs</code><span class="sig-paren">(</span><em>connection</em>, <em>power=1</em>, <em>interface=5</em>, <em>mode0=0</em>, <em>mode1=0</em>, <em>mode2=4</em>, <em>inpmux=1</em>, <em>ofcal0=0</em>, <em>ofcal1=0</em>, <em>ofcal2=0</em>, <em>fscal0=0</em>, <em>fscal1=0</em>, <em>fscal2=64</em>, <em>idacmux=187</em>, <em>idacmag=0</em>, <em>refmux=0</em>, <em>tdacp=0</em>, <em>tdacn=0</em>, <em>gpiocon=0</em>, <em>gpiodir=0</em>, <em>gpiodat=0</em>, <em>adc2cfg=0</em>, <em>adc2mux=1</em>, <em>adc2ofc0=0</em>, <em>adc2ofc1=0</em>, <em>adc2fsc0=0</em>, <em>adc2fsc1=64</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/piadcs/ads126x/ads126x.html#write_all_regs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#piadcs.ads126x.ads126x.write_all_regs" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes the default (or user specified) values to all the registers
+on the ADS126x.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Connection</strong> (<em>SpiDev object</em>) &#8211; The spi connection you use to communicate with the ADC. See spidev
+documentation for more details (<a class="reference external" href="https://pypi.org/project/spidev/">https://pypi.org/project/spidev/</a>)</li>
+<li><strong>Registers</strong> (<em>byte, optional</em>) &#8211; This function has 26 optional arguments wich correspond to the 26 8-bit
+programming registers on the ADS126x.The default arguments are the default
+values for those registers. This is based on the ADS126x datasheet.
+Options for register settings can be found in the constants file. Use the
+setregister function to change multiple values. Please also refer to
+section 9.6 (register maps) of that datasheet before using these arguments.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-piadcs.ads126x.constants">
+<span id="piadcs-ads126x-constants-module"></span><h2>piadcs.ads126x.constants module<a class="headerlink" href="#module-piadcs.ads126x.constants" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-piadcs.ads126x">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-piadcs.ads126x" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">piadcs.ads126x package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-piadcs.ads126x.ads126x">piadcs.ads126x.ads126x module</a></li>
+<li><a class="reference internal" href="#module-piadcs.ads126x.constants">piadcs.ads126x.constants module</a></li>
+<li><a class="reference internal" href="#module-piadcs.ads126x">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/piadcs.ads126x.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Anna Knapp.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/piadcs.ads126x.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

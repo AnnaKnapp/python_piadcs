@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>piadcs.ads126x.ads126x &mdash; piadcs 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="piadcs 0.1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for piadcs.ads126x.ads126x</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">piadcs</span> <span class="kn">import</span> <span class="n">readFromConsecutiveRegisters</span><span class="p">,</span> <span class="n">writeToConsecutiveRegisters</span>
+<span class="kn">import</span> <span class="nn">spidev</span>
+<span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="startConversions"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.startConversions">[docs]</a><span class="k">def</span> <span class="nf">startConversions</span><span class="p">(</span><span class="n">strt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Starts ADC1 conversions by pulling the START pin high</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    STRT : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the start pin of the ADC</span>
+<span class="sd">        Pin 26 is used for this in the example wiring diagram</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">strt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="stopConversions"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.stopConversions">[docs]</a><span class="k">def</span> <span class="nf">stopConversions</span><span class="p">(</span><span class="n">strt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stops ADC1 conversions by pulling the START pin low</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    STRT : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the start pin of the ADC</span>
+<span class="sd">        Pin 26 is used for this in the example wiring diagram</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">strt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="startCommand"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.startCommand">[docs]</a><span class="k">def</span> <span class="nf">startCommand</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Starts ADC1 conversions using the start command sent over SPI</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">START1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="stopCommand"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.stopCommand">[docs]</a><span class="k">def</span> <span class="nf">stopCommand</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stops ADC1 conversions using the stop command sent over SPI</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">STOP1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="init_GPIO_SPI"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.init_GPIO_SPI">[docs]</a><span class="k">def</span> <span class="nf">init_GPIO_SPI</span><span class="p">(</span><span class="n">STRT</span><span class="p">,</span> <span class="n">DRDY</span><span class="p">,</span> <span class="n">PWDN</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">spiBus</span><span class="p">,</span> <span class="n">spispeedHz</span><span class="p">,</span> <span class="n">spidevice</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;initializes the GPIO pins and SPI bus on the Raspbery Pi</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    STRT : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the start pin of the ADC</span>
+<span class="sd">        Pin 26 is used for this in the example wiring diagram</span>
+<span class="sd">    DRDY : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the data ready pin of</span>
+<span class="sd">        the ADC. Pin 4 is used for this in the example wiring diagram</span>
+<span class="sd">    PWDN : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the power down pin of the</span>
+<span class="sd">        ADC. Pin 27 is used for this in the example wiring diagram</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+<span class="sd">    spiBus : int</span>
+<span class="sd">        The spi bus on the Raspberry Pi that you want to use to communicate</span>
+<span class="sd">        with the ADS126x. bus 0 is is used for this in the example</span>
+<span class="sd">    spispeedHz : int</span>
+<span class="sd">        The speed in Hertz of the SPI clock. This should scale depending on</span>
+<span class="sd">        your ADC datarate. Higher data rates will require faster SPI.</span>
+<span class="sd">        communication</span>
+<span class="sd">    spidevice : int, optional</span>
+<span class="sd">        Sets SPI device if using multiple devices on the same SPI bus. Default</span>
+<span class="sd">        is zero and can be left as such if you are only using the one device.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">STRT</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>  <span class="c1"># start pin at gpio pin 4 - output</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">DRDY</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">IN</span><span class="p">,</span> <span class="n">pull_up_down</span><span class="o">=</span><span class="n">GPIO</span><span class="o">.</span><span class="n">PUD_UP</span><span class="p">)</span>  <span class="c1"># DRDY pin</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">PWDN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>  <span class="c1"># PWDN pin</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">spiBus</span><span class="p">,</span> <span class="n">spidevice</span><span class="p">)</span>  <span class="c1"># (bus, device)</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mb">0b01</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">bits_per_word</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">max_speed_hz</span> <span class="o">=</span> <span class="n">spispeedHz</span></div>
+
+
+<div class="viewcode-block" id="restart"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.restart">[docs]</a><span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="n">strt</span><span class="p">,</span> <span class="n">pwdn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;restarts the ADS126x</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    STRT : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the start pin of the ADC</span>
+<span class="sd">        In the example wiring diagram this is pin 22</span>
+<span class="sd">    PWDN : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the power down pin</span>
+<span class="sd">        of the ADC. In the example wiring diagram this is pin 27</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">pwdn</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># turn it off</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mf">.5</span><span class="p">)</span>  <span class="c1"># let it have a nap</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">pwdn</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># turn it on</span>
+    <span class="c1"># Set start low so conversions don&#39;t run and DRDY doesn&#39;t pulse</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">strt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_Data_By_Command_CHK"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.read_Data_By_Command_CHK">[docs]</a><span class="k">def</span> <span class="nf">read_Data_By_Command_CHK</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;reads a single conversion from the ADS1262. Use for reading in pulse</span>
+<span class="sd">    conversion mode See datasheet section 9.4.1.2.</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Returns a tuple containing a list of 4 bytes representing the</span>
+<span class="sd">        raw output of the ADC, and an error check. If the error check</span>
+<span class="sd">        is None that means that the checksum passed and the data is useable.</span>
+<span class="sd">        If the checksum fails the list will be None, and the error check</span>
+<span class="sd">        will be the string &quot;Checksum Failed&quot;. If you are getting a lot of</span>
+<span class="sd">        this error, you may want to consider increasing SPI speed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">xfer2</span><span class="p">([</span><span class="n">RDATA1</span><span class="p">])</span>
+    <span class="n">datain</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">readbytes</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">datain</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">datain</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span><span class="o">+</span><span class="mh">0x9B</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Checksum Failed&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datain</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="read_Continuous_CHK"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.read_Continuous_CHK">[docs]</a><span class="k">def</span> <span class="nf">read_Continuous_CHK</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">DRDY</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;reads a 32 bit conversion from the ADC. Use for reading direct</span>
+<span class="sd">    (ADS126x datasheet section 9.4.7.1)</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+<span class="sd">    DRDY : int</span>
+<span class="sd">        The BCM number for the GPIO pin connected to the data ready pin</span>
+<span class="sd">        of the ADC. Pin 4 is shown for this in the wiring diagram</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        Returns a tuple containing a list of 4 bytes representing the</span>
+<span class="sd">        raw output of the ADC, and an error check. If the error check</span>
+<span class="sd">        is None that means that the checksum passed and the data is useable.</span>
+<span class="sd">        If the checksum fails the list will be None, and the error check</span>
+<span class="sd">        will be the string &quot;Checksum Failed&quot;. If you are getting a lot of</span>
+<span class="sd">        this error, you may want to consider increasing SPI speed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dataready</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">wait_for_edge</span><span class="p">(</span><span class="n">DRDY</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">FALLING</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dataready</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Timeout occurred - check data ready pin, and make sure start pin or start command was used&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datain</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">readbytes</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datain</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">datain</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span><span class="o">+</span><span class="mh">0x9B</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Checksum Failed&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">datain</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="convert_data"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.convert_data">[docs]</a><span class="k">def</span> <span class="nf">convert_data</span><span class="p">(</span><span class="n">datain</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;converts the output of the ADC into a voltage</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    datain : list</span>
+<span class="sd">        A list of bytes (the raw output of the adc)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        a float indicating a voltage between 2.5v and -2.5v - This will</span>
+<span class="sd">        not be adjusted for PGA gain. If you use a voltage reference other</span>
+<span class="sd">        than midsupply (2.5v) which is what is used by the internal</span>
+<span class="sd">        reference then you will need to adjust this accordingly</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">combined_data</span> <span class="o">=</span> <span class="n">datain</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span> <span class="o">|</span> <span class="n">datain</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span> <span class="o">|</span> <span class="n">datain</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="n">datain</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">combined_data</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">combined_data</span> <span class="o">=</span> <span class="n">combined_data</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">converteddata</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">combined_data</span><span class="o">*</span><span class="p">(</span><span class="mf">2.5</span><span class="o">/</span><span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">converteddata</span></div>
+
+
+<div class="viewcode-block" id="write_all_regs"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.write_all_regs">[docs]</a><span class="k">def</span> <span class="nf">write_all_regs</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mh">0x01</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="mh">0x05</span><span class="p">,</span> <span class="n">mode0</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+                   <span class="n">mode1</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">mode2</span><span class="o">=</span><span class="mh">0x04</span><span class="p">,</span> <span class="n">inpmux</span><span class="o">=</span><span class="mh">0x01</span><span class="p">,</span> <span class="n">ofcal0</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">ofcal1</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+                   <span class="n">ofcal2</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">fscal0</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">fscal1</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">fscal2</span><span class="o">=</span><span class="mh">0x40</span><span class="p">,</span> <span class="n">idacmux</span><span class="o">=</span><span class="mh">0xBB</span><span class="p">,</span>
+                   <span class="n">idacmag</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">refmux</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">tdacp</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">tdacn</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">gpiocon</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span>
+                   <span class="n">gpiodir</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">gpiodat</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">adc2cfg</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">adc2mux</span><span class="o">=</span><span class="mh">0x01</span><span class="p">,</span>
+                   <span class="n">adc2ofc0</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">adc2ofc1</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">adc2fsc0</span><span class="o">=</span><span class="mh">0x00</span><span class="p">,</span> <span class="n">adc2fsc1</span><span class="o">=</span><span class="mh">0x40</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;writes the default (or user specified) values to all the registers</span>
+<span class="sd">    on the ADS126x.</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+<span class="sd">    Registers : byte, optional</span>
+<span class="sd">        This function has 26 optional arguments wich correspond to the 26 8-bit</span>
+<span class="sd">        programming registers on the ADS126x.The default arguments are the default</span>
+<span class="sd">        values for those registers. This is based on the ADS126x datasheet.</span>
+<span class="sd">        Options for register settings can be found in the constants file. Use the</span>
+<span class="sd">        setregister function to change multiple values. Please also refer to </span>
+<span class="sd">        section 9.6 (register maps) of that datasheet before using these arguments.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">registervalues</span> <span class="o">=</span> <span class="p">[</span><span class="n">power</span><span class="p">,</span> <span class="n">interface</span><span class="p">,</span> <span class="n">mode0</span><span class="p">,</span> <span class="n">mode1</span><span class="p">,</span> <span class="n">mode2</span><span class="p">,</span> <span class="n">inpmux</span><span class="p">,</span> <span class="n">ofcal0</span><span class="p">,</span>
+                      <span class="n">ofcal1</span><span class="p">,</span> <span class="n">ofcal2</span><span class="p">,</span> <span class="n">fscal0</span><span class="p">,</span> <span class="n">fscal1</span><span class="p">,</span> <span class="n">fscal2</span><span class="p">,</span> <span class="n">idacmux</span><span class="p">,</span> <span class="n">idacmag</span><span class="p">,</span> <span class="n">refmux</span><span class="p">,</span> <span class="n">tdacp</span><span class="p">,</span>
+                      <span class="n">tdacn</span><span class="p">,</span> <span class="n">gpiocon</span><span class="p">,</span> <span class="n">gpiodir</span><span class="p">,</span> <span class="n">gpiodat</span><span class="p">,</span> <span class="n">adc2cfg</span><span class="p">,</span> <span class="n">adc2mux</span><span class="p">,</span> <span class="n">adc2ofc0</span><span class="p">,</span> <span class="n">adc2ofc1</span><span class="p">,</span>
+                      <span class="n">adc2fsc0</span><span class="p">,</span> <span class="n">adc2fsc1</span><span class="p">]</span>
+    <span class="n">writeToConsecutiveRegisters</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">POWER_ADDRESS</span><span class="p">,</span> <span class="n">registervalues</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_all_regs"><a class="viewcode-back" href="../../../piadcs.ads126x.html#piadcs.ads126x.ads126x.read_all_regs">[docs]</a><span class="k">def</span> <span class="nf">read_all_regs</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;reads the values of all the registers on the ADS1262. starting with</span>
+<span class="sd">    the ID register (register 0)</span>
+
+<span class="sd">    Arguments</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Connection : SpiDev object</span>
+<span class="sd">        The spi connection you use to communicate with the ADC. See spidev</span>
+<span class="sd">        documentation for more details (https://pypi.org/project/spidev/)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">readFromConsecutiveRegisters</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">26</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Anna Knapp.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
